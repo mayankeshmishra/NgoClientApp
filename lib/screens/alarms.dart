@@ -107,7 +107,13 @@ class _AlarmState extends State<Alarm> {
       
       body: Container(
           decoration: profilePageLoginButtonGradient,
-          child: listBuilder(context)),
+          child: Column(
+            children: <Widget>[
+              Expanded(child: listBuilder(context)),
+              // RaisedButton(onPressed: (){},child:Text("Watch AD"))
+            ],
+          )),
+          
       floatingActionButton: _bottomButtons(context),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
