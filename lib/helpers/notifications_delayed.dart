@@ -1,4 +1,4 @@
-import 'package:donations/screens/profile.dart';
+import 'package:donations/helpers/ad_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -51,8 +51,9 @@ class LocalNotificationsDelayed {
   }
 
   Future onSelectNotification(String payload) {
-    
+    Navigator.push(context,MaterialPageRoute(builder: (context)=>ShowAd()));
   }
+  
 
   showNotification() async {
     print(index);
