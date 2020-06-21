@@ -1,5 +1,6 @@
-
+import 'package:donations/screens/show_transaction_image.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_database/firebase_database.dart';
 
 import 'package:donations/helpers/constants.dart';
 import '../ui_components/bottom_app_bar.dart';
@@ -14,7 +15,50 @@ class Transactions extends StatefulWidget {
 class _TransactionsState extends State<Transactions> {
   ClipPathClass clip = ClipPathClass();
   BottomAppBarClass appBar = BottomAppBarClass();
-  DonationsMade card= DonationsMade();
+  DonationsMade card = DonationsMade();
+  int transactionTotal=0;
+  List<String> transactions = [];
+  List<String> ngoName = [];
+  List<String> transactionsImageUrl=[];
+
+  void initState() {
+    super.initState();
+
+    DatabaseReference postsRef =
+        FirebaseDatabase.instance.reference().child("Transactions");
+    postsRef.once().then((DataSnapshot snap) {
+      var KEYS = snap.value.keys;
+      var DATA = snap.value;
+
+      transactions.clear();
+      ngoName.clear();
+      transactionsImageUrl.clear();
+
+      for (var indivisualKey in KEYS) {
+        print(DATA[indivisualKey]['amount']);
+        ngoName.add(DATA[indivisualKey]['name']);
+        transactions.add(DATA[indivisualKey]['amount']);
+        transactionsImageUrl.add(DATA[indivisualKey]['image']);
+      }
+      setState(() {
+        transactionTotal=transactions.fold(0, (p, c) => p + int.parse(c));
+      });
+    });
+  }
+
+  Widget listBuilderTransactionList(BuildContext context) {
+    return ListView.builder(
+        itemCount: transactions.length,
+        itemBuilder: (BuildContext context, int i) {
+          return GestureDetector(
+              child: card.getCard(
+                  amount: transactions[i], organisation: ngoName[i]),
+              onTap: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context)=>ShowTransactionDetails(transactionsImageUrl[i])));
+              });
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
     double deviceWidth = MediaQuery.of(context).size.width;
@@ -54,7 +98,7 @@ class _TransactionsState extends State<Transactions> {
                       ),
                       SizedBox(height: 15),
                       Text(
-                        "₹50,00,000",
+                        transactionTotal.toString(),
                         style: TextStyle(
                             fontSize: 45,
                             color: Color(0xFF64ffda),
@@ -65,19 +109,10 @@ class _TransactionsState extends State<Transactions> {
                   ),
                 ),
               ),
-              
-              SizedBox(height:10),
-              Expanded(child: ListView(children: <Widget>[
-                card.getCard(amount:50000, organisation:"xxx"),
-                card.getCard(amount:20000, organisation:"yyy"),
-                card.getCard(amount:25000, organisation:"zzz"),
-                card.getCard(amount:40000, organisation:"xxx"),
-                card.getCard(amount:30000, organisation:"yyy"),
-                card.getCard(amount:10000, organisation:"zzz"),
-                card.getCard(amount:60000, organisation:"xxx"),
-                card.getCard(amount:10000, organisation:"yyy"),
-              ],),)
-              
+              SizedBox(height: 10),
+              Expanded(
+                child: listBuilderTransactionList(context),
+              ),
             ],
           ),
         ),

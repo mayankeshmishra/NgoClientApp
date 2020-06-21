@@ -10,7 +10,7 @@ class DonationsMade{
                           '₹ $amount Donated to $organisation',
                           style: TextStyle(
                             color:Color(0xFF004d40),
-                            fontSize: 20,
+                            fontSize: 17,
                             fontWeight: FontWeight.bold,
                             fontFamily: 'SourceSansPro',
                           ),
